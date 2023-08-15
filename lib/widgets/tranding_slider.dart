@@ -1,13 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:movie_app/helper/constants.dart';
+import 'package:movie_app/models/movie.dart';
 import 'package:movie_app/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 
 class TrendingSlider extends StatelessWidget {
-  const TrendingSlider({
-    super.key,
-    required this.snapshot,
-  });
+  final Function(Movie) onMovieSelected;
+  const TrendingSlider(
+      {super.key, required this.snapshot, required this.onMovieSelected});
 
   final AsyncSnapshot snapshot;
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/models/movie.dart';
 import '../helper/constants.dart';
 import '../screens/details_screen.dart';
 
 class MoviesSlider extends StatelessWidget {
-  const MoviesSlider({
-    super.key,
-    required this.snapshot,
-  });
+  final Function(Movie) onMovieSelected;
+  const MoviesSlider(
+      {super.key, required this.snapshot, required this.onMovieSelected});
   final AsyncSnapshot snapshot;
   @override
   Widget build(BuildContext context) {

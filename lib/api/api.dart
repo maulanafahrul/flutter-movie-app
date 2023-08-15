@@ -3,14 +3,15 @@ import 'dart:convert';
 import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/models/movie.dart';
 import 'package:http/http.dart' as http;
+import 'package:movie_app/models/review.dart';
 
 class Api {
   static const _trendingUrl =
-      'https://api.themoviedb.org/3/trending/movie/day?api_key=${Constants.apiKey}';
+      '${Constants.baseUrl}/trending/movie/day?api_key=${Constants.apiKey}';
   static const _topRatedUrl =
-      'https://api.themoviedb.org/3/movie/top_rated?api_key=${Constants.apiKey}';
+      '${Constants.baseUrl}/movie/top_rated?api_key=${Constants.apiKey}';
   static const _upcomingUrl =
-      'https://api.themoviedb.org/3/movie/upcoming?api_key=${Constants.apiKey}';
+      '${Constants.baseUrl}/movie/upcoming?api_key=${Constants.apiKey}';
 
   Future<List<Movie>> getTrendingMovies() async {
     final response = await http.get(Uri.parse(_trendingUrl));
@@ -39,6 +40,23 @@ class Api {
       return decodedData.map((movie) => Movie.fromJson(movie)).toList();
     } else {
       throw Exception('Something happened');
+    }
+  }
+
+  Future<List<Review>> getMovieReviews(int movieId) async {
+    final response = await http.get(
+      Uri.parse(
+          '${Constants.baseUrl}/movie/$movieId/reviews?api_key=${Constants.apiKey}'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> reviewsData = data['results'];
+      final List<Review> reviews =
+          reviewsData.map((reviewData) => Review.fromJson(reviewData)).toList();
+
+      return reviews;
+    } else {
+      throw Exception('Failed to load reviews');
     }
   }
 }

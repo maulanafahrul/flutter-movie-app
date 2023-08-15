@@ -4,9 +4,10 @@ import '../api/api.dart';
 import '../models/movie.dart';
 import '../widgets/movies_slider.dart';
 import '../widgets/tranding_slider.dart';
+import '../screens/details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -14,15 +15,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Movie>> trendingMovies;
-  late Future<List<Movie>> topRatedovies;
+  late Future<List<Movie>> topRatedMovies;
   late Future<List<Movie>> upcomingMovies;
+  late Function(Movie) onMovieSelected;
 
   @override
   void initState() {
     super.initState();
     trendingMovies = Api().getTrendingMovies();
-    topRatedovies = Api().getTopRatedMovies();
+    topRatedMovies = Api().getTopRatedMovies();
     upcomingMovies = Api().getUpcomingMovies();
+    onMovieSelected = _navigateToDetails;
+  }
+
+  // Define a function to navigate to the DetailsScreen
+  void _navigateToDetails(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailsScreen(movie: movie),
+      ),
+    );
   }
 
   @override
@@ -31,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text("Movie app"),
+        title: const Text("Movie App"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -46,75 +59,72 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: GoogleFonts.aBeeZee(fontSize: 25),
               ),
               const SizedBox(height: 32),
-              SizedBox(
-                child: FutureBuilder(
-                  future: trendingMovies,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString()),
-                      );
-                    } else if (snapshot.hasData) {
-                      return TrendingSlider(
-                        snapshot: snapshot,
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+              FutureBuilder(
+                future: trendingMovies,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  } else if (snapshot.hasData) {
+                    return TrendingSlider(
+                      snapshot: snapshot,
+                      onMovieSelected: _navigateToDetails,
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
               const SizedBox(height: 32),
               Text(
-                'Top rated movies',
+                'Top Rated Movies',
                 style: GoogleFonts.aBeeZee(
                   fontSize: 25,
                 ),
               ),
               const SizedBox(height: 32),
-              SizedBox(
-                child: FutureBuilder(
-                  future: topRatedovies,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString()),
-                      );
-                    } else if (snapshot.hasData) {
-                      return MoviesSlider(
-                        snapshot: snapshot,
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+              FutureBuilder(
+                future: topRatedMovies,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  } else if (snapshot.hasData) {
+                    return MoviesSlider(
+                      snapshot: snapshot,
+                      onMovieSelected: _navigateToDetails,
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
               const SizedBox(height: 32),
               Text(
-                'Upcoming movies',
+                'Upcoming Movies',
                 style: GoogleFonts.aBeeZee(
                   fontSize: 25,
                 ),
               ),
               const SizedBox(height: 32),
-              SizedBox(
-                child: FutureBuilder(
-                  future: upcomingMovies,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString()),
-                      );
-                    } else if (snapshot.hasData) {
-                      return MoviesSlider(
-                        snapshot: snapshot,
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+              FutureBuilder(
+                future: upcomingMovies,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  } else if (snapshot.hasData) {
+                    return MoviesSlider(
+                      snapshot: snapshot,
+                      onMovieSelected: _navigateToDetails,
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
             ],
           ),
