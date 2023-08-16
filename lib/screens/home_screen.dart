@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_app/models/genre.dart';
+import 'package:movie_app/widgets/genre_movies_slider.dart';
 import '../api/api.dart';
 import '../models/movie.dart';
 import '../widgets/movies_slider.dart';
@@ -18,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Movie>> topRatedMovies;
   late Future<List<Movie>> upcomingMovies;
   late Function(Movie) onMovieSelected;
+  late List<Genre> genres = []; // Initialize the genres list to an empty list
 
   @override
   void initState() {
@@ -26,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     topRatedMovies = Api().getTopRatedMovies();
     upcomingMovies = Api().getUpcomingMovies();
     onMovieSelected = _navigateToDetails;
+    genres = []; // Initialize an empty list of genres
+    _loadGenres(); // Load genres data
   }
 
   // Define a function to navigate to the DetailsScreen
@@ -36,6 +41,17 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context) => DetailsScreen(movie: movie),
       ),
     );
+  }
+
+  void _loadGenres() async {
+    try {
+      final fetchedGenres = await Api().getMovieGenres();
+      setState(() {
+        genres = fetchedGenres;
+      });
+    } catch (error) {
+      print("Error loading genres: $error");
+    }
   }
 
   @override
@@ -125,6 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
                 },
+              ),
+              const SizedBox(height: 16),
+              GenreMoviesSlider(
+                genres: genres,
+                onMovieSelected: _navigateToDetails,
               ),
             ],
           ),
