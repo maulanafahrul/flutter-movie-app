@@ -6,6 +6,7 @@ import 'package:movie_app/models/review.dart';
 import 'package:movie_app/widgets/back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen({
@@ -14,6 +15,14 @@ class DetailsScreen extends StatelessWidget {
   }) : super(key: key);
 
   final Movie movie;
+
+  Future<void> _launchYouTubeTrailer() async {
+    if (await canLaunchUrl(Uri.parse(movie.youtubeTrailerUrl))) {
+      await launchUrl(Uri.parse(movie.youtubeTrailerUrl));
+    } else {
+      throw 'Could not launch ${movie.youtubeTrailerUrl}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +36,18 @@ class DetailsScreen extends StatelessWidget {
             pinned: true,
             floating: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                child: Image.network(
-                  '${Constants.imagePath}${movie.posterPath}',
-                  filterQuality: FilterQuality.high,
-                  fit: BoxFit.fill,
+              background: GestureDetector(
+                onTap: _launchYouTubeTrailer, // Launch YouTube trailer on tap
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                  child: Image.network(
+                    '${Constants.imagePath}${movie.posterPath}',
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
             ),
@@ -149,7 +161,7 @@ class DetailsScreen extends StatelessWidget {
               ),
             ),
           ),
-        ], // Remove this extra bracket
+        ],
       ),
     );
   }
